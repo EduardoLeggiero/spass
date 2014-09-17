@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.0.0-SNAPSHOT
+## 0.0.1
+
+### 2014-09-16
+- Upgraded SecureSocial to 3.0-M1
+- Removed SORM and db module
+- Converted everything to Slick 2.1 and using Play's built in Slick support
+- Project now uses scala 2.11 and sbt 13.5
 
 ### 2014-07-20
 - Upgraded to use Play 2.3.1 ***SecureSocial is broken until verion 3 supporting Play 2.3.1**
