@@ -3,6 +3,7 @@
 ## 0.0.1
 
 ### 2014-09-16
+- Renamed project to Slick Play AngularJS SecureSocial Seed (SPASS)
 - Upgraded SecureSocial to 3.0-M1
 - Removed SORM and db module
 - Converted everything to Slick 2.1 and using Play's built in Slick support
