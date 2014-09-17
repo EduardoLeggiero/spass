@@ -1,0 +1,8 @@
+GET        /generate-name        @io.spass.users.controllers.UserController.generateName
+GET        /navigation           @io.spass.users.controllers.UserController.navigation
+GET        /home                 @io.spass.users.controllers.UserController.home
+
+GET        /vassets/*file        controllers.Assets.versioned(path="/public/users", file: Asset)
+GET        /assets/*file         controllers.Assets.at(path="/public/users", file)
+
+->         /                 securesocial.Routes
