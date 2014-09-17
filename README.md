@@ -2,23 +2,24 @@
 
 ## Description
 
-This project aims to be a seed for single-page user driven web apps.
+This project is a seed for single-page user driven web apps.
 
+- Languages: Coffescript, CSS, Scala
 - Persistence: Slick
-- Presentation: AngluarJS and Bootstrap
+- Presentation: AngluarJS, Bootstrap
 - REST: Play Framework
 - Security: SecureSocial
 
-## Follow Us on Twitter
+## Twitter
 
 - [@knockingspirit](http://twitter.com/knockingspirit)
 - [@honaink](https://twitter.com/honaink)
 
-## Setup and Notes
+## Notes
 
-- The smtp server is set to mock, io the outgoing emails will be logged in the console
+- The smtp server is set to mock. Outgoing emails will be logged to the console.
 
-## Libraries Used
+## Projects
 
 - [AngularJS 1.2.24](http://angularjs.org)
 - [Bootstrap 3.2.0](http://getbootstrap.com)
@@ -27,6 +28,6 @@ This project aims to be a seed for single-page user driven web apps.
 - [RequireJS 2.1.14](http://requirejs.org)
 - [sbt 0.13.5](http://www.scala-sbt.org)
 - [Scala 2.11.2](http://www.scala-lang.org)
-- [SecureSocial 3.0.0](https://github.com/jaliss/securesocial)
+- [SecureSocial 3.0-M1](https://github.com/jaliss/securesocial)
 - [Slick 2.1.0](http://slick.typesafe.com)
 - [WebJars 2.3.0](http://www.webjars.org)
