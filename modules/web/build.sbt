@@ -1,3 +1,1 @@
 name := "web"
-
-Common.settings

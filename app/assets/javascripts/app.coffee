@@ -1,27 +1,39 @@
 'use strict'
 
+requirejs.config(
+  paths:
+    'angular': ['../lib/angularjs/angular'],
+    'angular-resource': ['../lib/angularjs/angular-resource'],
+    'angular-route': ['../lib/angularjs/angular-route']
+  shim:
+    'angular':
+      exports: 'angular'
+    'angular-route': ['angular'],
+    'angular-resource': ['angular']
+)
+
 require([
     'angular',
     'angular-resource',
     'angular-route',
-    '/web/vassets/javascripts/web-app.js'
-    '/users/vassets/javascripts/users-app.js'
+    '/vassets/javascripts/web/main.js',
+    '/vassets/javascripts/users/main.js'
   ], (angular) ->
 
-  paws = angular.module('paws', ['ngResource', 'ngRoute', 'web', 'users'])
+  spass = angular.module('spass', ['ngResource', 'ngRoute', 'web', 'users'])
 
-  paws.factory 'navigation',
+  spass.factory 'navigation',
   ($resource) ->
     $resource('navigation')
 
-  paws.config [
+  spass.config [
     '$routeProvider',
     ($routeProvider) ->
       $routeProvider.when '/',
-        templateUrl: 'web/vassets/partials/welcome.tpl.html'
+        templateUrl: 'users/vassets/partials/signup-start.tpl.html'
       $routeProvider.otherwise
         redirectTo: '/'
   ]
 
-  angular.bootstrap(document, ['paws']);
+  angular.bootstrap(document, ['spass']);
 )
