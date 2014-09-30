@@ -1,5 +1,8 @@
 package io.spass.users.service.slick
 
+import com.github.tototoshi.slick.JdbcJodaSupport._
+import org.joda.time.DateTime
+import play.api.Logger
 import play.api.db.slick.DB
 import securesocial.core.authenticator.{Authenticator, CookieAuthenticator, HttpHeaderAuthenticator}
 import io.spass.users.models.{UserAuthenticator, UserTableQueries, BasicUser}
@@ -16,6 +19,7 @@ import play.api.Play.current
  * @since 2014-08-25
  */
 class SlickAuthenticatorStore[A <: Authenticator[BasicUser]] extends securesocial.core.authenticator.AuthenticatorStore[A] {
+  val logger: Logger = Logger(this.getClass)
   /**
    * Retrieves an Authenticator from the backing store
    *
@@ -26,30 +30,30 @@ class SlickAuthenticatorStore[A <: Authenticator[BasicUser]] extends securesocia
   override def find(id: String)(implicit ct: ClassTag[A]): Future[Option[A]] = Future successful {
     DB withSession { implicit session =>
       userAuthenticators.filter(_.id === id).firstOption match {
-        case Some(sa) =>
-          users.filter(_.id === sa.userId).firstOption match {
+        case Some(userAuthenticator) =>
+          users.filter(_.id === userAuthenticator.userId).firstOption match {
             case Some(sbu) =>
               val basicUser = sbu.basicUser
               ct.runtimeClass.getSimpleName match {
                 case "CookieAuthenticator" =>
                   Option(
                     CookieAuthenticator(
-                      sa.id,
+                      userAuthenticator.id,
                       basicUser,
-                      sa.expirationDate,
-                      sa.lastUsed,
-                      sa.creationDate,
+                      userAuthenticator.expirationDate,
+                      userAuthenticator.lastUsed,
+                      userAuthenticator.creationDate,
                       this.asInstanceOf[SlickAuthenticatorStore[CookieAuthenticator[BasicUser]]]
                     ).asInstanceOf[A]
                   )
                 case "HttpHeaderAuthenticator" =>
                   Option(
                     HttpHeaderAuthenticator(
-                      sa.id,
+                      userAuthenticator.id,
                       basicUser,
-                      sa.expirationDate,
-                      sa.lastUsed,
-                      sa.creationDate,
+                      userAuthenticator.expirationDate,
+                      userAuthenticator.lastUsed,
+                      userAuthenticator.creationDate,
                       this.asInstanceOf[SlickAuthenticatorStore[HttpHeaderAuthenticator[BasicUser]]]
                     ).asInstanceOf[A]
                   )
@@ -70,7 +74,7 @@ class SlickAuthenticatorStore[A <: Authenticator[BasicUser]] extends securesocia
    */
   override def delete(id: String): Future[Unit] = Future successful {
     DB withSession { implicit session =>
-      userAuthenticators.filter(_.id === id).delete
+      userAuthenticators.filter(ua => ua.id === id).delete
       ()
     }
   }
@@ -83,15 +87,20 @@ class SlickAuthenticatorStore[A <: Authenticator[BasicUser]] extends securesocia
    * @return the saved authenticator
    */
   override def save(authenticator: A, timeoutInSeconds: Int): Future[A] = Future successful {
+    val userAuthenticator: UserAuthenticator = UserAuthenticator(
+      authenticator.id,
+      authenticator.user.main.userId,
+      authenticator.expirationDate,
+      authenticator.lastUsed,
+      authenticator.creationDate
+    )
+
     DB withSession { implicit session =>
-      userAuthenticators += UserAuthenticator(
-        authenticator.id,
-        authenticator.user.main.userId,
-        authenticator.expirationDate,
-        authenticator.lastUsed,
-        authenticator.creationDate
-      )
-      authenticator
+      userAuthenticators.filter(_.id === authenticator.id).firstOption match {
+        case Some(ua) => userAuthenticators.update(userAuthenticator)
+        case None => userAuthenticators += userAuthenticator
+      }
     }
+    authenticator
   }
 }

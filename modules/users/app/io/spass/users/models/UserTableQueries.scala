@@ -7,9 +7,7 @@ import scala.slick.lifted.TableQuery
  * @since 9/6/14
  */
 object UserTableQueries {
-  object mailTokens extends TableQuery(new MailTokens(_)) {
-    //val findByUuid = this.findBy(_.uuid)
-  }
+  object mailTokens extends TableQuery(new MailTokens(_))
   object userAuthenticators extends TableQuery(new UserAuthenticators(_))
   object users extends TableQuery(new Users(_))
   object oauth1s extends TableQuery(new OAuth1s(_))

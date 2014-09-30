@@ -18,7 +18,7 @@ case class User(id: String, mainId: Long) {
 
 class Users(tag: Tag) extends Table[User](tag, "user") {
   def id = column[String]("id", O.PrimaryKey)
-  def mainId = column[Long]("main_id", O.NotNull)
+  def mainId = column[Long]("main_id")
 
   def * = (id, mainId) <> (User.tupled, User.unapply)
 }

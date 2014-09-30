@@ -15,11 +15,9 @@ case class Password(id: Option[Long] = None, hasher: String, password: String, s
 
 class Passwords(tag: Tag) extends Table[Password](tag, "password") {
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  def userId = column[String]("user_id", O.NotNull)
   def hasher = column[String]("hasher")
   def password = column[String]("password")
   def salt = column[Option[String]]("salt")
 
   def * = (id.?, hasher, password, salt) <> (Password.tupled, Password.unapply)
 }
-

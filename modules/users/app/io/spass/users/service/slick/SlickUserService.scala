@@ -6,8 +6,8 @@ import play.api.Logger
 import play.api.Play.current
 import play.api.db.slick.DB
 import securesocial.core._
-import securesocial.core.providers.{MailToken, UsernamePasswordProvider}
-import securesocial.core.services.SaveMode
+import securesocial.core.providers.{MailToken, UsernamePasswordProvider => UserPass}
+import securesocial.core.services.{UserService, SaveMode}
 import io.spass.users.models._
 import UserTableQueries._
 
@@ -18,7 +18,7 @@ import scala.slick.driver.JdbcDriver.simple._
  * @author Joseph Dessens
  * @since 2014-08-03
  */
-class SlickUserService extends securesocial.core.services.UserService[BasicUser] {
+class SlickUserService extends UserService[BasicUser] {
   val logger: Logger = Logger(this.getClass)
 
   override def find(providerId: String, userId: String): Future[Option[BasicProfile]] = Future successful {
@@ -58,12 +58,18 @@ class SlickUserService extends securesocial.core.services.UserService[BasicUser]
 
   override def passwordInfoFor(user: BasicUser): Future[Option[PasswordInfo]] = Future successful {
     DB withSession { implicit session =>
-      passwords.filter(_.userId === user.main.userId).firstOption.map(sp => sp.passwordInfo)
+      profiles
+        .filter(p => p.providerId === UserPass.UsernamePassword && p.userId === user.main.userId)
+        .firstOption match {
+        case Some(profile) =>
+          passwords.filter(_.id === profile.passwordId).firstOption.map(p => p.passwordInfo)
+        case None => None
+      }
     }
   }
 
   override def save(profile: BasicProfile, mode: SaveMode): Future[BasicUser] = Future successful {
-    logger.debug("SaveMode: " + mode)
+    logger.debug(f"mode: $mode")
 
     mode match {
       case SaveMode.SignUp =>
@@ -94,13 +100,33 @@ class SlickUserService extends securesocial.core.services.UserService[BasicUser]
 
           users += User(profile.userId, profileId)
 
-          BasicUser(profile, List())
+          users.filter(_.id === profile.userId).first.basicUser
         }
-      case SaveMode.LoggedIn =>
+      case SaveMode.PasswordChange =>
         DB withSession { implicit session =>
-          users.filter(_.id === profile.userId).firstOption.get.basicUser
+          val passwordId = profiles
+            .filter(p => p.userId === profile.userId && p.providerId === UserPass.UsernamePassword)
+            .first.passwordId
+
+          val passwordInfo = profile.passwordInfo.get
+
+          val password = Password(
+            passwordId,
+            passwordInfo.hasher,
+            passwordInfo.password,
+            passwordInfo.salt
+          )
+
+          passwords.filter(_.id === passwordId).update(password)
+
+          logger.debug("PasswordChange")
+
+          users.filter(_.id === profile.userId).first.basicUser
         }
-      case _ => null
+      case _ =>
+        DB withSession { implicit session =>
+          users.filter(_.id === profile.userId).first.basicUser
+        }
     }
   }
 
@@ -112,16 +138,19 @@ class SlickUserService extends securesocial.core.services.UserService[BasicUser]
   }
 
   override def updatePasswordInfo(user: BasicUser, info: PasswordInfo): Future[Option[BasicProfile]] = Future successful {
-    val userId = user.main.userId
+    logger.debug("updatePasswordInfo")
 
     DB withSession { implicit session =>
-      passwords
-        .filter(_.userId === userId)
-        .update(Password(None, info.hasher, info.password, info.salt))
+      val profile = profiles
+        .filter(p => p.userId === user.main.userId && p.providerId === UserPass.UsernamePassword)
+        .firstOption
 
-        profiles
-          .filter(p => p.userId === userId && p.providerId === UsernamePasswordProvider.UsernamePassword)
-          .firstOption.map(p => p.basicProfile)
+      profile match {
+        case Some(p) =>
+          passwords.update(Password(p.passwordId, info.hasher, info.password, info.salt))
+          profile.map(p => p.basicProfile)
+        case None => None
+      }
     }
   }
 

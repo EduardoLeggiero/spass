@@ -12,6 +12,8 @@ homepage := Some(url("https://github.com/spass/spass"))
 
 licenses := Seq("GNU AFFERO GENERAL PUBLIC LICENSE, Version 3" -> url("http://www.gnu.org/licenses/agpl-3.0.txt"))
 
+resolvers in ThisBuild += Resolver.url("Edulify Repository", url("http://edulify.github.io/modules/releases/"))(Resolver.ivyStylePatterns)
+
 lazy val web = (project in file("modules/web"))
   .enablePlugins(PlayScala)
 
@@ -34,6 +36,7 @@ libraryDependencies ++= Seq(
 libraryDependencies in ThisBuild ++= Seq(
   cache,
   jdbc,
+  "com.edulify" %% "play-hikaricp" % "1.4.1",
   "com.github.tototoshi" %% "slick-joda-mapper" % "1.2.0",
   "com.typesafe.play" %% "play-slick" % "0.8.0",
   "org.joda" % "joda-convert" % "1.6",

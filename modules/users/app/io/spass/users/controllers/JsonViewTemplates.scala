@@ -43,6 +43,8 @@ object JsonViewTemplates extends ViewTemplates {
   }
 
   override def getPasswordChangePage(form: Form[ChangeInfo])(implicit request: RequestHeader, lang: Lang): Html = {
+
+
     processForm(form)
   }
 
