@@ -1,15 +1,10 @@
 # Slick Play AngularJS SecureSocial Seed
 
 ## Description
-
 This project is a seed for single-page user driven web apps.
 
 - Languages: Coffescript, CSS, Scala
-<<<<<<< HEAD
 - Persistence: Slick, HikariCP
-=======
-- Persistence: Slick
->>>>>>> FETCH_HEAD
 - Presentation: AngluarJS, Bootstrap
 - REST: Play Framework
 - Security: SecureSocial
@@ -21,7 +16,7 @@ This project is a seed for single-page user driven web apps.
 
 ## Notes
 
-- The smtp server is set to mock. Outgoing emails will be logged to the console.
+The smtp server is set to mock. Outgoing emails will be logged to the console.
 
 ## Projects
 
