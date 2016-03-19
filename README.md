@@ -5,7 +5,7 @@ This project is a seed for single-page user driven web apps.
 
 - Languages: Coffescript, CSS, Scala
 - Persistence: Slick, HikariCP
-- Presentation: AngluarJS, Bootstrap
+- Presentation: AngularJS, Bootstrap
 - REST: Play Framework
 - Security: SecureSocial
 
